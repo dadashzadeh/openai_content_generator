@@ -25,6 +25,8 @@ A powerful OpenCart 3 extension that leverages OpenAI's API to automatically gen
   - Model selection
   - Placeholder support for dynamic content
 
+![Alt text](img.jpg?raw=true "OpenAI Content Generator for OpenCart 3")
+
 ## Installation
 
 1. Download the latest release
