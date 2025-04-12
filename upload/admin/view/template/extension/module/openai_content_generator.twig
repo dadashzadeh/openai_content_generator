@@ -1,0 +1,129 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-module" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="module_openai_content_generator_status" id="input-status" class="form-control">
+                {% if module_openai_content_generator_status %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-api-key">{{ entry_api_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="module_openai_content_generator_api_key" value="{{ module_openai_content_generator_api_key }}" placeholder="{{ entry_api_key }}" id="input-api-key" class="form-control" />
+              {% if error_api_key %}
+              <div class="text-danger">{{ error_api_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-base-url">{{ entry_base_url }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="module_openai_content_generator_base_url" value="{{ module_openai_content_generator_base_url }}" placeholder="{{ entry_base_url }}" id="input-base-url" class="form-control" />
+              <small class="form-text text-muted">{{ help_base_url }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-temperature">{{ entry_temperature }}</label>
+            <div class="col-sm-10">
+              <input type="number" name="module_openai_content_generator_temperature" value="{{ module_openai_content_generator_temperature }}" placeholder="0.7" step="0.1" min="0" max="1" id="input-temperature" class="form-control" />
+              <small class="form-text text-muted">{{ help_temperature }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-model">{{ entry_model }}</label>
+            <div class="col-sm-10">
+              <select name="module_openai_content_generator_model" id="input-model" class="form-control">
+                {% for key, value in available_models %}
+                <option value="{{ key }}" {% if module_openai_content_generator_model == key %}selected="selected"{% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
+              <small class="form-text text-muted">{{ help_model }}</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{ text_available_placeholders }}</label>
+            <div class="col-sm-10">
+              <div class="well well-sm">
+                <div class="row">
+                  <div class="col-sm-4">{{ text_placeholder_p }}</div>
+                  <div class="col-sm-4">{{ text_placeholder_pt }}</div>
+                  <div class="col-sm-4">{{ text_placeholder_pm }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4">{{ text_placeholder_pd }}</div>
+                  <div class="col-sm-4">{{ text_placeholder_pn }}</div>
+                  <div class="col-sm-4">{{ text_placeholder_pname }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-name-prompt">{{ entry_name_prompt }}</label>
+            <div class="col-sm-10">
+              <textarea name="module_openai_content_generator_name_prompt" rows="5" placeholder="{{ entry_name_prompt }}" id="input-name-prompt" class="form-control">{{ module_openai_content_generator_name_prompt }}</textarea>
+              <small class="form-text text-muted">{{ help_name_prompt }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-title-prompt">{{ entry_title_prompt }}</label>
+            <div class="col-sm-10">
+              <textarea name="module_openai_content_generator_title_prompt" rows="5" placeholder="{{ entry_title_prompt }}" id="input-title-prompt" class="form-control">{{ module_openai_content_generator_title_prompt }}</textarea>
+              <small class="form-text text-muted">{{ help_title_prompt }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-model-prompt">{{ entry_model_prompt }}</label>
+            <div class="col-sm-10">
+              <textarea name="module_openai_content_generator_model_prompt" rows="5" placeholder="{{ entry_model_prompt }}" id="input-model-prompt" class="form-control">{{ module_openai_content_generator_model_prompt }}</textarea>
+              <small class="form-text text-muted">{{ help_model_prompt }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-description-prompt">{{ entry_description_prompt }}</label>
+            <div class="col-sm-10">
+              <textarea name="module_openai_content_generator_description_prompt" rows="5" placeholder="{{ entry_description_prompt }}" id="input-description-prompt" class="form-control">{{ module_openai_content_generator_description_prompt }}</textarea>
+              <small class="form-text text-muted">{{ help_description_prompt }}</small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }} 

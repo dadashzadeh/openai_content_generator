@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>OpenAI Content Generator</name>
+    <code>openai_content_generator</code>
+    <version>1.0.0</version>
+    <author>OpenAI</author>
+    <link>https://www.opencart.com</link>
+
+    <file path="admin/controller/catalog/product.php">
+        <operation>
+            <search><![CDATA[$this->load->language('catalog/product');]]></search>
+            <add position="after"><![CDATA[
+        // OpenAI Content Generator
+        $this->document->addStyle('view/javascript/openai_content_generator/loading/loading.css');
+        $this->document->addScript('view/javascript/openai_content_generator/loading/jquery.loading.min.js');
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/catalog/product_form.twig">
+        <operation>
+            <search><![CDATA[<script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>]]></search>
+            <add position="after"><![CDATA[
+    <script type="text/javascript">
+        function generateContent(languageID, languageName, objectName, field) {
+            var product_id = getURLVar('product_id');
+            var product_name = $('#input-name' + languageID).val();
+            var trimObject = $("#" + objectName + languageID);
+            var objectLoading = (objectName === "input-description") ? $(trimObject).parent('div') : $(trimObject);
+
+            if (!product_id) {
+                alert('Please save the product first to get its ID');
+                return;
+            }
+
+            $(objectLoading).loading();
+
+            $.ajax({
+                url: 'index.php?route=extension/module/openai_content_generator/generateProductContent&user_token={{ user_token }}',
+                type: 'GET',
+                data: {
+                    product_id: product_id,
+                    field: field
+                },
+                dataType: 'json',
+                success: function(json) {
+                    if (json['success']) {
+                        if (objectName === "input-description") {
+                            $(trimObject).summernote('code', json['data']['content']);
+                        } else {
+                            $(trimObject).val(json['data']['content']);
+                        }
+                    } else {
+                        alert(json['error']);
+                    }
+                    $(objectLoading).loading('stop');
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    $(objectLoading).loading('stop');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            {% for language in languages %}
+            $('#input-name{{ language.language_id }}').parent('div').addClass('input-group').append($('<span/>')
+                .attr('role', 'button')
+                .text('!')
+                .addClass('input-group-addon btn btn-primary btn-sm')
+                .click(function() {
+                    generateContent({{ language.language_id }}, "{{ language.name }}", "input-name", "name");
+                }));
+
+            $('#input-meta-title{{ language.language_id }}').parent('div').addClass('input-group').append($('<span/>')
+                .attr('role', 'button')
+                .text('!')
+                .addClass('input-group-addon btn btn-primary btn-sm')
+                .click(function() {
+                    generateContent({{ language.language_id }}, "{{ language.name }}", "input-meta-title", "title");
+                }));
+
+            $('#input-model').parent('div').addClass('input-group').append($('<span/>')
+                .attr('role', 'button')
+                .text('!')
+                .addClass('input-group-addon btn btn-primary btn-sm')
+                .click(function() {
+                    generateContent(1, "Default", "input-model", "model");
+                }));
+
+            $('#input-description{{ language.language_id }}').parent('div').addClass('input-group').append($('<span/>')
+                .attr('role', 'button')
+                .text('!')
+                .addClass('input-group-addon btn btn-primary btn-sm')
+                .click(function() {
+                    generateContent({{ language.language_id }}, "{{ language.name }}", "input-description", "description");
+                }));
+            {% endfor %}
+        });
+    </script>
+            ]]></add>
+        </operation>
+    </file>
+</modification> 
